@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration
     {
 
         Schema::create('users', function (Blueprint $table) {
-            $table->increments('id');
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('application')->unique();
             $table->string('email')->unique();
@@ -36,21 +36,22 @@ class CreateUsersTable extends Migration
             $table->string('voter_id_zone');
             $table->string('voter_id_section');
 
-            $table->integer('naturalness_country')->unsigned();
+            $table->string('naturalness_country');
             $table->foreign('naturalness_country')->references('id')->on('country');
 
-            $table->integer('naturalness_state')->unsigned();
+            $table->string('naturalness_state');
             $table->foreign('naturalness_state')->references('id')->on('state');
 
-            $table->integer('voter_id_state')->unsigned();
+            $table->string('voter_id_state');
             $table->foreign('voter_id_state')->references('id')->on('state');
 
-            $table->integer('polo_id')->unsigned();
-            $table->integer('course_id')->unsigned();
+            $table->string('polo_id');
+            $table->string('course_id');
 
             $table->rememberToken();
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
     }
 

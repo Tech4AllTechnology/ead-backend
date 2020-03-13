@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
 {
+    use UUIDGenerator;
+    
     protected $table = 'country';
     /**
      * The attributes that are mass assignable.
@@ -28,7 +30,6 @@ class Country extends Model
     public function getCountryList() {
         return Country::whereNull('deleted_at')->get();
     }
-
 
     public function states() {
         return $this->hasMany('App\State', 'country_id','id');

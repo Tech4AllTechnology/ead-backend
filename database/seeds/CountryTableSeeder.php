@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
+
 class CountryTableSeeder extends Seeder
 {
     /**
@@ -12,6 +13,7 @@ class CountryTableSeeder extends Seeder
     public function run()
     {
         DB::table('country')->insert([
+            'id' => (string) Webpatser\Uuid\Uuid::generate(),
             'name' => 'Brasil',
             'initial' => 'BR',
             'created_at' => (date_create())->format('Y-m-d H:i:s')

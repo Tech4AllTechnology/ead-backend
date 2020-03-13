@@ -13,6 +13,7 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
+            'id' => (string) Webpatser\Uuid\Uuid::generate(),
             'name' => str_random(10),
             'email' => str_random(10).'@gmail.com',
             'password' => bcrypt('secret'),
@@ -33,9 +34,9 @@ class UserTableSeeder extends Seeder
             'voter_id_section' => str_random(10),
             'polo_id' => rand(),
             'course_id' => rand(),
-            'naturalness_country' => 1,
-            'voter_id_state' => 27,
-            'naturalness_state' => 27,
+            'naturalness_country' => \App\Country::first()->id,
+            'voter_id_state' => \App\State::first()->id,
+            'naturalness_state' => \App\State::first()->id,
             'status' => str_random(10),
             'created_at' => (date_create())->format('Y-m-d H:i:s')
         ]);

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class State extends Model
 {
+    use UUIDGenerator;
     protected $table = 'state';
     /**
      * The attributes that are mass assignable.
@@ -24,6 +25,7 @@ class State extends Model
     protected $hidden = [
         'deleted_at', 'created_at', 'updated_at'
     ];
+
 
     public function country() {
         return $this->belongsTo('App\Country', 'country_id');

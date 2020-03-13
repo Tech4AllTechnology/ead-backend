@@ -23,4 +23,12 @@ Route::group(['middleware' => 'auth:api'], function() {
 
 
     Route::get('/state', 'StateController@index');
+
+    Route::get('/program', 'ProgramController@index');
+    Route::post('/program', 'ProgramController@store');
+    Route::put('/program/{program}', 'ProgramController@update');
+    Route::delete('/program/{program}', 'ProgramController@destroy');
+
+    Route::get('/course', 'CourseController@index');
+
 });
