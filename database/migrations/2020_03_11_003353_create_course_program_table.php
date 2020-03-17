@@ -14,7 +14,11 @@ class CreateCourseProgramTable extends Migration
     public function up()
     {
         Schema::create('course_program', function (Blueprint $table) {
-            $table->timestamps();
+            $table->string('course_id');
+            $table->string('program_id');
+            $table->foreign('course_id')->references('id')->on('courses');
+            $table->foreign('program_id')->references('id')->on('programs');
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
     }
 

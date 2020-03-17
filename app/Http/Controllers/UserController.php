@@ -28,7 +28,8 @@ class UserController extends Controller
                     'password' => request('password'),
                     'deleted_at' => null
                 ]
-            )) {
+            )
+            ) {
                 $user = Auth::user();
                 $success['token'] = $user->createToken('MyApp')->accessToken;
                 return response()->json(['data' => $success, 'code' => $this->successStatus], $this->successStatus);

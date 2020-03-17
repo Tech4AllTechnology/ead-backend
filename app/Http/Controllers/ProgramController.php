@@ -59,13 +59,13 @@ class ProgramController extends Controller
                 return response()->json(['code' => 400, 'message' => 'Já existe um curso com esse nome.'], $this->successStatus);
             }
 
-            $program = $request->all();
+            $program = $request->only(['name', 'code', 'status', 'program_type', 'recognized_by_mec']);
             $program['code'] = $program['name'] . date_create()->format('Ym');
             $program = Program::create($program);
             return response()->json(['data' => ['key' => $program->id, 'code' => $program->code], 'code' => 200], $this->successStatus);
 
         } catch (\Exception $exception) {
-            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], 500);
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
         }
     }
 
@@ -114,7 +114,7 @@ class ProgramController extends Controller
             return response()->json(['data' => ['status' => $program], 'code' => 200], $this->successStatus);
 
         } catch (\Exception $exception) {
-            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], 500);
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
         }
     }
 
@@ -133,7 +133,7 @@ class ProgramController extends Controller
             $program = $program->delete();
             return response()->json(['data' => ['status' => $program], 'code' => 200], $this->successStatus);
         } catch (\Exception $exception) {
-            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], 500);
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
         }
     }
 

@@ -25,10 +25,14 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/state', 'StateController@index');
 
     Route::get('/program', 'ProgramController@index');
+    Route::get('/program/enable', 'ProgramController@index');
     Route::post('/program', 'ProgramController@store');
     Route::put('/program/{program}', 'ProgramController@update');
     Route::delete('/program/{program}', 'ProgramController@destroy');
 
     Route::get('/course', 'CourseController@index');
+    Route::post('/course', 'CourseController@store');
+    Route::put('/course/{course}', 'CourseController@update');
+    Route::delete('/course/{course}', 'CourseController@destroy');
 
 });

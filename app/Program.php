@@ -4,12 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Webpatser\Uuid\Uuid;
 
 class Program extends Model
 {
     use UUIDGenerator, SoftDeletes;
+
+    public $incrementing = false;
+
     protected $fillable = [
-        'name', 'code', 'status', 'type'
+        'name', 'code', 'status', 'program_type', 'recognized_by_mec'
     ];
 
     /**
@@ -21,11 +25,22 @@ class Program extends Model
         'deleted_at', 'created_at', 'updated_at'
     ];
 
+    protected static function boot()
+    {
+        static::creating(function ($model) {
+            $model->{$model->getKeyName()} = Uuid::generate()->string;
+        });
+    }
+
     public function getProgramList() {
         return Program::whereNull('deleted_at')->get();
     }
 
     public function checkProgramExists($name) {
         return Program::where('name', '=', $name)->where('status', '=', 1)->exists();
+    }
+
+    public function course() {
+        return $this->belongsToMany('App\Course', 'course_program', 'program_id', 'course_id');
     }
 }

@@ -16,8 +16,10 @@ class CreateCourseTable extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('type');
+            $table->string('code');
             $table->boolean('status');
+            $table->integer('credit');
+            $table->integer('period');
             $table->softDeletes();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));
