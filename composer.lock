@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "019090660db6d28130c49e06a08b1351",
+    "content-hash": "29f02b44200c286c56ca7525211f4cdf",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -711,6 +711,64 @@
             ],
             "description": "Highlight PHP code in terminal",
             "time": "2018-09-29T18:48:56+00:00"
+        },
+        {
+            "name": "jeremykenedy/laravel-roles",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jeremykenedy/laravel-roles.git",
+                "reference": "4c307ec32043e30c9c11c22249cd80750dfec145"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jeremykenedy/laravel-roles/zipball/4c307ec32043e30c9c11c22249cd80750dfec145",
+                "reference": "4c307ec32043e30c9c11c22249cd80750dfec145",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*",
+                "php": ">=5.6.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "jeremykenedy\\LaravelRoles\\RolesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "jeremykenedy\\LaravelRoles\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Roman Bičan",
+                    "email": "romanbican@seznam.cz"
+                },
+                {
+                    "name": "Jeremy Kenedy",
+                    "email": "jeremykenedy@gmail.com"
+                },
+                {
+                    "name": "Ultraware"
+                }
+            ],
+            "description": "Powerful package for handling roles and permissions in Laravel. Supports Laravel 5.3 and higher",
+            "keywords": [
+                "acl",
+                "laravel",
+                "levels",
+                "permissions",
+                "roles"
+            ],
+            "time": "2019-02-28T01:05:13+00:00"
         },
         {
             "name": "kylekatarnls/update-helper",

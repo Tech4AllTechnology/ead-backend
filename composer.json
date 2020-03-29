@@ -6,7 +6,9 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
+        "doctrine/lexer": "1.2.0",
         "fideloper/proxy": "~3.3",
+        "jeremykenedy/laravel-roles": "1.4.0",
         "laravel/framework": "5.5.*",
         "laravel/passport": "4.0",
         "laravel/tinker": "~1.0",

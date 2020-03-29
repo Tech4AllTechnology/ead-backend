@@ -35,4 +35,9 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('/course/{course}', 'CourseController@update');
     Route::delete('/course/{course}', 'CourseController@destroy');
 
+    Route::get('/campus', 'UniversityCampusController@index')->middleware('role:admin');
+    Route::post('/campus', 'UniversityCampusController@store');
+    Route::put('/campus/{campus}', 'UniversityCampusController@update');
+    Route::delete('/campus/{campus}', 'UniversityCampusController@destroy');
+
 });

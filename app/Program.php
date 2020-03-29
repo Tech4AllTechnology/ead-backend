@@ -25,13 +25,6 @@ class Program extends Model
         'deleted_at', 'created_at', 'updated_at'
     ];
 
-    protected static function boot()
-    {
-        static::creating(function ($model) {
-            $model->{$model->getKeyName()} = Uuid::generate()->string;
-        });
-    }
-
     public function getProgramList() {
         return Program::whereNull('deleted_at')->get();
     }

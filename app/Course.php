@@ -17,12 +17,12 @@ class Course extends Model
         'created_at', 'deleted_at', 'updated_at'
     ];
 
-    public function program() {
+    public function programItems() {
         return $this->belongsToMany('App\Program', 'course_program', 'course_id', 'program_id');
     }
 
     public function getCourseList() {
-        return Course::whereNull('deleted_at')->with('program:id,name')->get(['']);
+        return Course::whereNull('deleted_at')->with('programItems:id,name')->get();
     }
 
     public function checkCourseExists($name) {

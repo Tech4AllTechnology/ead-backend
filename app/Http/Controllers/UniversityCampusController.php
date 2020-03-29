@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Course;
+use App\UniversityCampus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
-class CourseController extends Controller
+class UniversityCampusController extends Controller
 {
-
     protected $successStatus = 200;
     /**
      * Display a listing of the resource.
@@ -22,7 +21,11 @@ class CourseController extends Controller
             if (!Auth::check()) {
                 Throw new \Exception('Você não tem permissão para acessar essa página.');
             }
-            return response()->json(['code' => 200, 'data' => (new Course())->getCourseList()], $this->successStatus);
+            return response()->json(
+                [
+                    'code' => 200, 'data' => (new UniversityCampus())->getUniversityCampusList()
+                ], $this->successStatus
+            );
         } catch (\Exception $exception) {
             return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
         }
@@ -55,18 +58,19 @@ class CourseController extends Controller
                 return response()->json(['code' => 401, 'message' => 'Os dados estão incorretos.'], $this->successStatus);
             }
 
-            if ((new Course())->checkCourseExists($request->name)) {
+            if ((new UniversityCampus())->checkUniversityCampusExists($request->name)) {
                 return response()->json(['code' => 400, 'message' => 'Já existe um curso com esse nome.'], $this->successStatus);
             }
 
-            $course = $request->only(['name', 'code', 'status', 'credit', 'period']);
-            $programs = $request->only(['program_items'])['program_items'];
-            $course['code'] = $course['name'] . date_create()->format('Ym');
-            $course = Course::create($course);
-            foreach ($programs as $program) {
-                $course->programItems()->attach($program['id']);
-            }
-            return response()->json(['data' => ['key' => $course->id, 'code' => $course->code], 'code' => 200], $this->successStatus);
+            $universityCampus = $request->only(['name', 'status', 'state', 'responsible_id']);
+            $universityCampus = UniversityCampus::create($universityCampus);
+            return response()->json(
+                [
+                    'data' => [
+                        'key' => $universityCampus->id, 'code' => $universityCampus->code
+                    ], 'code' => 200
+                ], $this->successStatus
+            );
 
         } catch (\Exception $exception) {
             return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
@@ -76,10 +80,10 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Course  $course
+     * @param  \App\UniversityCampus  $universityCampus
      * @return \Illuminate\Http\Response
      */
-    public function show(Course $course)
+    public function show(UniversityCampus $universityCampus)
     {
         //
     }
@@ -87,10 +91,10 @@ class CourseController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Course  $course
+     * @param  \App\UniversityCampus  $universityCampus
      * @return \Illuminate\Http\Response
      */
-    public function edit(Course $course)
+    public function edit(UniversityCampus $universityCampus)
     {
         //
     }
@@ -99,13 +103,12 @@ class CourseController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Course  $course
+     * @param  \App\UniversityCampus  $universityCampus
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Course $course)
+    public function update(Request $request, UniversityCampus $universityCampus)
     {
         try {
-            $programItens = [];
             if (!Auth::check()) {
                 response()->json(['code' => 403, 'message' => 'Você não tem acesso a essa função'], $this->successStatus);
             }
@@ -114,17 +117,16 @@ class CourseController extends Controller
                 return response()->json(['code' => 401, 'message' => 'Os dados estão incorretos.'], $this->successStatus);
             }
 
-            $courseData = $request->all();
-            $programs = $request->only(['program_items'])['program_items'];
-
-            foreach ($programs as $program) {
-                array_push($programItens, $program['id']);
-            }
-
-            $course->programItems()->sync($programItens);
-
-            $course = $course->update($courseData);
-            return response()->json(['data' => ['key' => $course->id, 'code' => $course->code], 'code' => 200], $this->successStatus);
+            $universityCampusData = $request->all();
+            $universityCampus = $universityCampus->update($universityCampusData);
+            return response()->json(
+                [
+                    'data' => [
+                        'key' => $universityCampus->id,
+                        'code' => $universityCampus->code
+                    ], 'code' => 200
+                ], $this->successStatus
+            );
 
         } catch (\Exception $exception) {
             return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
@@ -134,17 +136,17 @@ class CourseController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Course  $course
+     * @param  \App\UniversityCampus  $universityCampus
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Course $course)
+    public function destroy(UniversityCampus $universityCampus)
     {
         try {
             if (!Auth::check()) {
                 response()->json(['code' => 403, 'message' => 'Você não tem acesso a essa função'], $this->successStatus);
             }
-            $course = $course->delete();
-            return response()->json(['data' => ['status' => $course], 'code' => 200], $this->successStatus);
+            $universityCampus = $universityCampus->delete();
+            return response()->json(['data' => ['status' => $universityCampus], 'code' => 200], $this->successStatus);
         } catch (\Exception $exception) {
             return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
         }
@@ -154,7 +156,9 @@ class CourseController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'status' => 'required'
+            'status' => 'required',
+            'state' => 'exists:state,id',
+            'responsible_id' => 'exists:users,id'
         ]);
         return $validator->fails();
     }
