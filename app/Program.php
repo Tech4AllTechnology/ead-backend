@@ -13,7 +13,7 @@ class Program extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'code', 'status', 'program_type', 'recognized_by_mec'
+        'name', 'code', 'status', 'program_type', 'recognized_by_mec', 'responsible_id'
     ];
 
     /**
@@ -26,7 +26,7 @@ class Program extends Model
     ];
 
     public function getProgramList() {
-        return Program::whereNull('deleted_at')->get();
+        return Program::whereNull('deleted_at')->with('responsible:id,name')->get();
     }
 
     public function checkProgramExists($name) {
@@ -35,5 +35,9 @@ class Program extends Model
 
     public function course() {
         return $this->belongsToMany('App\Course', 'course_program', 'program_id', 'course_id');
+    }
+
+    public function responsible() {
+        return $this->belongsTo('App\User', 'responsible_id');
     }
 }

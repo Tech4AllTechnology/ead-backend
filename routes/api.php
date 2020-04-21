@@ -19,10 +19,13 @@ Route::post('/user/login', 'UserController@login');
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/user/info', 'UserController@details');
     Route::get('/user', 'UserController@index');
-    Route::post('/user/register', 'UserController@register');
+    Route::post('/user', 'UserController@store')->middleware('role:admin');
+    Route::put('/user/{user}', 'UserController@update');
+    Route::delete('/user/{user}', 'UserController@destroy');
+    Route::get('/user/professor', 'UserController@listProfessor');
 
-
-    Route::get('/state', 'StateController@index');
+    Route::get('/state', 'StateController@index')->middleware('role:admin');
+    Route::get('/country', 'CountryController@index')->middleware('role:admin');
 
     Route::get('/program', 'ProgramController@index');
     Route::get('/program/enable', 'ProgramController@index');
@@ -37,7 +40,10 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::get('/campus', 'UniversityCampusController@index')->middleware('role:admin');
     Route::post('/campus', 'UniversityCampusController@store');
-    Route::put('/campus/{campus}', 'UniversityCampusController@update');
-    Route::delete('/campus/{campus}', 'UniversityCampusController@destroy');
+    Route::put('/campus/{universityCampus}', 'UniversityCampusController@update');
+    Route::delete('/campus/{universityCampus}', 'UniversityCampusController@destroy');
+
+    Route::get('/roles', 'RoleController@index')->middleware('role:admin');
+
 
 });

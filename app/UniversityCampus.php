@@ -32,6 +32,6 @@ class UniversityCampus extends Model
     }
 
     public function responsible() {
-        return $this->belongsTo('App\User', 'responsible_id');
+        return $this->hasOne('App\User', 'id', 'responsible_id');
     }
 }

@@ -11,7 +11,7 @@ class StateTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('state')->insert([
+        DB::table('states')->insert([
             [
                 'id' => (string) Webpatser\Uuid\Uuid::generate(),
                 'name' => 'Acre',

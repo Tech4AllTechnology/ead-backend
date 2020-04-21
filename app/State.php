@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class State extends Model
 {
     use UUIDGenerator;
-    protected $table = 'state';
     /**
      * The attributes that are mass assignable.
      *

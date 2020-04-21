@@ -20,6 +20,8 @@ class CreateProgramTable extends Migration
             $table->string('code');
             $table->boolean('recognized_by_mec');
             $table->integer('program_type');
+            $table->string('responsible_id');
+            $table->foreign('responsible_id')->references('id')->on('users');
             $table->softDeletes();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));

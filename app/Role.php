@@ -38,4 +38,5 @@ class Role extends Model implements RoleHasRelationsContract
             $this->connection = $connection;
         }
     }
+
 }

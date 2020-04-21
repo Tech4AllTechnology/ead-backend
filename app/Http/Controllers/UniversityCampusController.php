@@ -117,15 +117,11 @@ class UniversityCampusController extends Controller
                 return response()->json(['code' => 401, 'message' => 'Os dados estão incorretos.'], $this->successStatus);
             }
 
-            $universityCampusData = $request->all();
+            $universityCampusData = $request->except(['states', 'responsible']);
             $universityCampus = $universityCampus->update($universityCampusData);
             return response()->json(
                 [
-                    'data' => [
-                        'key' => $universityCampus->id,
-                        'code' => $universityCampus->code
-                    ], 'code' => 200
-                ], $this->successStatus
+                    'data' => ['status' => $universityCampus], 'code' => 200], $this->successStatus
             );
 
         } catch (\Exception $exception) {
@@ -157,7 +153,7 @@ class UniversityCampusController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'status' => 'required',
-            'state' => 'exists:state,id',
+            'state' => 'exists:states,id',
             'responsible_id' => 'exists:users,id'
         ]);
         return $validator->fails();

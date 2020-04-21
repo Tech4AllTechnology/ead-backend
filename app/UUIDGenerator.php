@@ -25,4 +25,8 @@ trait UUIDGenerator
     {
         return 'string';
     }
+
+    public static function generateUUID() {
+        return Uuid::generate()->string;
+    }
 }

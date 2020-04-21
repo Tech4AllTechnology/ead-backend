@@ -59,7 +59,7 @@ class ProgramController extends Controller
                 return response()->json(['code' => 400, 'message' => 'Já existe um curso com esse nome.'], $this->successStatus);
             }
 
-            $program = $request->only(['name', 'code', 'status', 'program_type', 'recognized_by_mec']);
+            $program = $request->only(['name', 'code', 'status', 'program_type', 'recognized_by_mec', 'responsible_id']);
             $program['code'] = $program['name'] . date_create()->format('Ym');
             $program = Program::create($program);
             return response()->json(['data' => ['key' => $program->id, 'code' => $program->code], 'code' => 200], $this->successStatus);
@@ -141,7 +141,8 @@ class ProgramController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'status' => 'required'
+            'status' => 'required',
+            'responsible_id' => 'exists:users,id'
         ]);
         return $validator->fails();
     }

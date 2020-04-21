@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CountryController extends Controller
 {
+    protected $successStatus = 200;
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,15 @@ class CountryController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            if (!Auth::check()) {
+                Throw new \Exception('Você não tem permissão para acessar essa página.');
+            }
+            $countries = (new Country())->all();
+            return response()->json(['code' => 200, 'data' => $countries], $this->successStatus);
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
     }
 
     /**

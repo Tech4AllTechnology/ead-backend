@@ -42,6 +42,7 @@ return [
     'models' => [
         'role'       => App\Role::class,
         'permission' => App\Permission::class,
+        'defaultUser' => App\User::class,
     ],
 
     /*
