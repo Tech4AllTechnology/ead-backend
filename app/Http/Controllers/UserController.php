@@ -208,9 +208,6 @@ class UserController extends Controller
                     unset($users[$index]);
                     continue;
                 }
-                foreach (User::$encrypted as $item) {
-                    $users[$index][$item] = Crypt::decryptString($user[$item]);
-                }
             }
             return response()->json(['code' => 200, 'data' => $users], $this->successStatus);
         } catch (\Exception $exception) {

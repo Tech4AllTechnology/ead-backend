@@ -43,6 +43,11 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('/campus/{universityCampus}', 'UniversityCampusController@update');
     Route::delete('/campus/{universityCampus}', 'UniversityCampusController@destroy');
 
+    Route::get('/clazz', 'ClazzController@index')->middleware('role:admin');
+    Route::post('/clazz', 'ClazzController@store');
+    Route::put('/clazz/{clazz}', 'ClazzController@update');
+    Route::delete('/clazz/{clazz}', 'ClazzController@destroy');
+
     Route::get('/roles', 'RoleController@index')->middleware('role:admin');
 
 
