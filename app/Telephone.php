@@ -11,7 +11,7 @@ class Telephone extends Model
     public $incrementing = false;
 
     public $fillable = [
-        'user_id', 'telephone'
+        'user_id', 'telephone_number'
     ];
 
     public function user() {

@@ -50,7 +50,7 @@ class ClazzController extends Controller
     {
         try {
             $input = $request->except('id');
-            $input['name'] = $input['course']['name'] . (date_create())->format('Ym');
+            $input['name'] = $input['course']['name'] . (date_create())->format('Ym') . rand(0, 500);
             $input['course_id'] = $input['course']['id'];
             $input['master_id'] = $input['master']['id'];
             $filterDate = $request->only(['filterDate'])['filterDate'];
@@ -59,22 +59,8 @@ class ClazzController extends Controller
             $clazz = Clazz::create($input);
             if ($request->has('weekdays') && $request->has('filterDate')) {
                 $weekdays = $request->only(['weekdays'])['weekdays'];
-                foreach ($weekdays as $weekday) {
-                    $dates = $this->getMondaysInRange($filterDate[0], $filterDate[1], $weekday['id']);
-                    foreach ($dates as $date) {
-                        ClazzTime::create(
-                            [
-                                'clazz_id' => $clazz->id,
-                                'weekday' => $weekday['id'],
-                                'initial_time' => $input['initialTime'],
-                                'end_time' => $input['endTime'],
-                                'clazz_day' => $date
-                            ]
-                        );
-                    }
-                }
+                $this->createClazzTime($clazz, $filterDate, $weekdays, $input['initialTime'], $input['endTime']);
             }
-
             return response()->json(['data' => ['key' => $clazz->id, 'name' => $clazz->name], 'code' => 200], $this->successStatus);
         } catch (\Exception $exception) {
             return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
@@ -112,7 +98,33 @@ class ClazzController extends Controller
      */
     public function update(Request $request, Clazz $clazz)
     {
-        //
+        try {
+            if (!Auth::check()) {
+                response()->json(['code' => 403, 'message' => 'Você não tem acesso a essa função'], $this->successStatus);
+            }
+
+            $clazzData = $request->all();
+            $filterDate = $request->only(['filterDate'])['filterDate'];
+
+            $clazzData['course_id'] = $clazzData['course']['id'];
+            $clazzData['master_id'] = $clazzData['master']['id'];
+            $clazzData['initial_date'] = $filterDate[0];
+            $clazzData['end_date'] = $filterDate[1];
+
+            $clazz->times()->forceDelete();
+
+            $clazz->update($clazzData);
+
+            if ($request->has('weekdays') && $request->has('filterDate')) {
+                $weekdays = $request->only(['weekdays'])['weekdays'];
+                $this->createClazzTime($clazz, $filterDate, $weekdays, $clazzData['initialTime'], $clazzData['endTime']);
+            }
+
+            return response()->json(['data' => ['key' => $clazz->id, 'code' => $clazz->name], 'code' => 200], $this->successStatus);
+
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
     }
 
     /**
@@ -123,10 +135,26 @@ class ClazzController extends Controller
      */
     public function destroy(Clazz $clazz)
     {
-        //
+        try {
+            if (!Auth::check()) {
+                response()->json(['code' => 403, 'message' => 'Você não tem acesso a essa função'], $this->successStatus);
+            }
+            $clazz = $clazz->delete();
+            return response()->json(['data' => ['status' => $clazz], 'code' => 200], $this->successStatus);
+        }  catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
     }
 
-    public function getMondaysInRange($dateFromString, $dateToString, $weekday)
+    /**
+     * Return a date of the next week day between two dates
+     *
+     * @param  $dateFromString string/date
+     * @param $dateToString string/date
+     * @param $weekday string
+     * @return array
+     */
+    public function getDaysInRange($dateFromString, $dateToString, $weekday)
     {
         $dateFrom = new \DateTime($dateFromString);
         $dateTo = new \DateTime($dateToString);
@@ -146,5 +174,35 @@ class ClazzController extends Controller
         }
 
         return $dates;
+    }
+
+
+    /**
+     * Return a date of the next week day between two dates
+     *
+     * @param  \App\Clazz $clazz
+     * @param array $filterDate
+     * @param array $weekdays
+     * @param string $initialTime
+     * @param string $endTime
+     * @return void
+     */
+    public function createClazzTime(Clazz $clazz, $filterDate, $weekdays, $initialTime, $endTime)
+    {
+        foreach ($weekdays as $weekday) {
+            $dates = $this->getDaysInRange($filterDate[0], $filterDate[1], $weekday['id']);
+            foreach ($dates as $date) {
+                ClazzTime::create(
+                    [
+                        'clazz_id' => $clazz->id,
+                        'weekday' => $weekday['id'],
+                        'initial_time' => $initialTime,
+                        'end_time' => $endTime,
+                        'clazz_day' => $date
+                    ]
+                );
+            }
+        }
+        return;
     }
 }

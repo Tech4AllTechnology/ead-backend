@@ -114,18 +114,17 @@ class UserController extends Controller
                 $input[$item] = Crypt::encryptString($input[$item]);
             }
             $input['application'] = (date_create())->format('YmdHisv');
-            $input['issuing_id_state'] = \App\State::first()->id;
-            $input['voter_id_state'] = \App\State::first()->id;
 
             $user = User::create($input);
+            $user->attachRole($request->only(['type']));
             if ($request->has('telephones')) {
                 $telephones = $request->only(['telephones'])['telephones'];
                 foreach ($telephones as $telephone) {
-                    Telephone::create(['user_id' => $user->id, 'telephone' => $telephone]);
+                    Telephone::create(['user_id' => $user->id, 'telephone_number' => $telephone['telephone_number']]);
                 }
             }
 
-            return response()->json(['data' => ['key' => $user->id], 'code' => 200], $this->successStatus);
+            return response()->json(['data' => ['key' => $user->id, 'user_type' => $user->user_type], 'code' => 200], $this->successStatus);
         } catch (\Exception $exception) {
             return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
         }
@@ -163,7 +162,7 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         try {
-            if (!Auth::check()) {
+            if (!Auth::check() || $user->hasOneRole('admin|administrativecoordinator')) {
                 response()->json(['code' => 403, 'message' => 'Você não tem acesso a essa função'], $this->successStatus);
             }
 
@@ -172,8 +171,21 @@ class UserController extends Controller
             }
 
             $userData = $request->all();
-            $user = $user->update($userData);
-            return response()->json(['data' => ['status' => $user], 'code' => 200], $this->successStatus);
+            foreach (User::$encrypted as $item) {
+                $userData[$item] = Crypt::encryptString($userData[$item]);
+            }
+            $user->update($userData);
+            $user->syncRoles($userData['type']);
+            $user->telephones()->forceDelete();
+            if ($request->has('telephones')) {
+                $telephones = $request->only(['telephones'])['telephones'];
+                foreach ($telephones as $telephone) {
+                    if (!is_null($telephone['telephone_number'])) {
+                        Telephone::create(['user_id' => $user->id, 'telephone_number' => $telephone['telephone_number']]);
+                    }
+                }
+            }
+            return response()->json(['data' => ['status' => $user, 'user_type' => $user->user_type], 'code' => 200], $this->successStatus);
 
         } catch (\Exception $exception) {
             return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
@@ -188,6 +200,11 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        try {
+            $user->delete();
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
         return response();
     }
 

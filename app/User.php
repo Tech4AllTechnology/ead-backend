@@ -21,12 +21,16 @@ class User extends Authenticatable implements HasRoleAndPermissionContract
         'name', 'email', 'password', 'application', 'status', 'birthday', 'mother_name', 'father_name', 'profession',
         'identity_number', 'issuing_authority', 'issuing_date', 'marital_status', 'cpf', 'scholarship_level',
         'latest_school', 'voter_id_number', 'voter_id_zone', 'voter_id_section', 'facebook_link', 'instagram_link',
-        'whatsapp_number', 'naturalness_country', 'naturalness_state', 'voter_id_state', 'issuing_id_state'
+        'whatsapp_number', 'naturalness_country', 'naturalness_state', 'voter_id_state', 'issuing_id_state',
+        'scholarship_conclusion_date', 'city', 'state_id', 'neighborhood', 'number', 'street', 'cep'
     ];
 
-    public static $encrypted = [
-        'cpf', 'voter_id_number', 'voter_id_zone', 'voter_id_section', 'identity_number'
-    ];
+    /**
+     * Custom fields.
+     *
+     * @var array
+     */
+    protected $appends = ['type', 'user_type'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -37,9 +41,29 @@ class User extends Authenticatable implements HasRoleAndPermissionContract
         'password', 'remember_token', 'created_at', 'updated_at', 'deleted_at'
     ];
 
+    /**
+     * The attributes that should be encrypted.
+     *
+     * @var array
+     */
+    public static $encrypted = [
+        'cpf', 'voter_id_number', 'voter_id_zone', 'voter_id_section', 'identity_number'
+    ];
+
+
     public function getUsersList() {
-        return User::whereNull('deleted_at')->get();
+        return User::whereNull('deleted_at')->with('telephones:id,user_id,telephone_number')->get();
     }
+
+    public function getTypeAttribute() {
+        return $this->getRoles()->first()->id ?? null;
+    }
+
+    public function getUserTypeAttribute() {
+        return $this->getRoles()->first()->name ?? null;
+    }
+
+
 
     public function state() {
         return $this->belongsTo('App\State');

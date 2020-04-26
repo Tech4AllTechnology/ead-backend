@@ -28,17 +28,19 @@ class CreateUsersTable extends Migration
             $table->longText('identity_number');
             $table->string('issuing_authority');
             $table->date('issuing_date');
-            $table->enum('marital_status', ['SOLTEIRO', 'CASADO', 'VIUVO', 'DIVORCIADO']);
             $table->longText('cpf');
-            $table->enum('scholarship_level', [
-                'FUNDAMENTAL_NAO_COMPLETO', 'FUNDAMENTAL_COMPLETO', 'MEDIO_NAO_COMPLETO', 'MEDIO_COMPLETO',
-                'TECNICO_NAO_COMPLETO', 'TECNICO_COMPLETO', 'SUPERIOR_NAO_COMPLETO', 'SUPERIOR_COMPLETO'
-            ]);
             $table->string('latest_school')->nullable();
+            $table->date('scholarship_conclusion_date')->nullable();
             $table->longText('voter_id_number');
             $table->longText('voter_id_zone');
             $table->longText('voter_id_section');
-            $table->date('scholarship_conclusion_date')->nullable();
+
+            $table->string('city');
+            $table->string('neighborhood');
+            $table->string('street');
+            $table->integer('number');
+            $table->string('cep');
+
 
             $table->string('facebook_link')->nullable();
             $table->string('instagram_link')->nullable();
@@ -46,6 +48,9 @@ class CreateUsersTable extends Migration
 
             $table->string('naturalness_country');
             $table->foreign('naturalness_country')->references('id')->on('country');
+
+            $table->string('state_id');
+            $table->foreign('state_id')->references('id')->on('states');
 
             $table->string('naturalness_state');
             $table->foreign('naturalness_state')->references('id')->on('states');
@@ -56,6 +61,12 @@ class CreateUsersTable extends Migration
             $table->string('issuing_id_state');
             $table->foreign('issuing_id_state')->references('id')->on('states');
 
+            $table->enum('scholarship_level', [
+                'FUNDAMENTAL_NAO_COMPLETO', 'FUNDAMENTAL_COMPLETO', 'MEDIO_NAO_COMPLETO', 'MEDIO_COMPLETO',
+                'TECNICO_NAO_COMPLETO', 'TECNICO_COMPLETO', 'SUPERIOR_NAO_COMPLETO', 'SUPERIOR_COMPLETO'
+            ]);
+
+            $table->enum('marital_status', ['SOLTEIRO', 'CASADO', 'VIUVO', 'DIVORCIADO']);
 
             $table->rememberToken();
             $table->softDeletes();

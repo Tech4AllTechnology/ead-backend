@@ -17,7 +17,7 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        $adminRole = Role::where('name', '=', 'Professor')->first();
+        $adminRole = Role::where('name', '=', 'Admin')->first();
         $permissions = Permission::all();
         $user = User::create(
             [
@@ -45,13 +45,19 @@ class UserTableSeeder extends Seeder
                 'naturalness_state' => \App\State::first()->id,
                 'status' => 1,
                 'created_at' => (date_create())->format('Y-m-d H:i:s'),
-                'issuing_id_state' => \App\State::first()->id
+                'issuing_id_state' => \App\State::first()->id,
+                'city' => str_random(10),
+                'neighborhood' => str_random(10),
+                'street' => str_random(10),
+                'number' => rand(),
+                'state_id' => \App\State::first()->id,
+                'cep' => str_random(10)
             ]
         );
 
         $user->attachRole($adminRole);
-//        foreach ($permissions as $permission) {
-//            $user->attachPermission($permission);
-//        }
+        foreach ($permissions as $permission) {
+            $user->attachPermission($permission);
+        }
     }
 }
