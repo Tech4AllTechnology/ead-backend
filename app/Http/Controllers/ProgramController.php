@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Program;
+use App\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
@@ -58,14 +59,28 @@ class ProgramController extends Controller
             if ((new Program())->checkProgramExists($request->name)) {
                 return response()->json(['code' => 400, 'message' => 'Já existe um curso com esse nome.'], $this->successStatus);
             }
-
             $program = $request->only(['name', 'code', 'status', 'program_type', 'recognized_by_mec', 'responsible_id']);
             $program['code'] = $program['name'] . date_create()->format('Ym');
             $program = Program::create($program);
+            if ($request->has('automatic') && $request->input('automatic') == 1 ) {
+                for ($index = 1; $index <= $request->input('quantity_courses'); $index++) {
+                    $course = [];
+                    $course['name'] = $program->name . $index;
+                    $course['code'] = $program->code . $index;
+                    $course['status'] = $program->status;
+                    $course['credit'] = 1;
+                    $course['period'] = 1;
+
+                    $course = Course::create($course);
+                    $programId['id'] = $program->id;
+                    $course->programItems()->attach($programId);
+                }
+            }
+
             return response()->json(['data' => ['key' => $program->id, 'code' => $program->code], 'code' => 200], $this->successStatus);
 
         } catch (\Exception $exception) {
-            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição' . $exception->getMessage()], $this->successStatus);
         }
     }
 
