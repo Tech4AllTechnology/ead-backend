@@ -13,7 +13,7 @@ class Program extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'code', 'status', 'program_type', 'recognized_by_mec', 'responsible_id'
+        'name', 'code', 'status', 'program_type', 'recognized_by_mec', 'responsible_id', 'automatic_courses'
     ];
 
     /**
@@ -39,5 +39,9 @@ class Program extends Model
 
     public function responsible() {
         return $this->belongsTo('App\User', 'responsible_id');
+    }
+
+    public function getProgramAutomaticList() {
+        return Program::whereNull('deleted_at')->where('automatic_courses', '=', 1)->with('responsible:id,name')->get();
     }
 }

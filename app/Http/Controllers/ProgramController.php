@@ -30,6 +30,23 @@ class ProgramController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function listConstant()
+    {
+        try {
+            if (!Auth::check()) {
+                Throw new \Exception('Você não tem permissão para acessar essa página.');
+            }
+            return response()->json(['code' => 200, 'data' => (new Program())->getProgramAutomaticList()], $this->successStatus);
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -59,10 +76,14 @@ class ProgramController extends Controller
             if ((new Program())->checkProgramExists($request->name)) {
                 return response()->json(['code' => 400, 'message' => 'Já existe um curso com esse nome.'], $this->successStatus);
             }
-            $program = $request->only(['name', 'code', 'status', 'program_type', 'recognized_by_mec', 'responsible_id']);
+            $program = $request->only(
+                [
+                    'name', 'code', 'status', 'program_type', 'recognized_by_mec', 'responsible_id', 'automatic_courses'
+                ]
+            );
             $program['code'] = $program['name'] . date_create()->format('Ym');
             $program = Program::create($program);
-            if ($request->has('automatic') && $request->input('automatic') == 1 ) {
+            if ($request->has('automatic_courses') && $request->input('automatic_courses') == 1 ) {
                 for ($index = 1; $index <= $request->input('quantity_courses'); $index++) {
                     $course = [];
                     $course['name'] = $program->name . $index;

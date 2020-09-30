@@ -51,6 +51,21 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function logout(Request $request)
+    {
+        try {
+            $request->user()->token()->revoke();
+            return response()->json(['code' => 200, 'data' => true], $this->successStatus);
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
+    }
+
+    /**
+     * details api
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function details()
     {
         try {

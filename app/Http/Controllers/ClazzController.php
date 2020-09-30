@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Clazz;
 use App\ClazzTime;
+use App\Program;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
@@ -51,7 +52,7 @@ class ClazzController extends Controller
         try {
             $input = $request->except('id');
             $input['name'] = $input['course']['name'] . (date_create())->format('Ym') . rand(0, 500);
-            $input['course_id'] = $input['course']['id'];
+            $input['course_id'] = !empty($input['course']['id']) ? $input['course']['id'] : Program::find($input['program']['id'])->course()->first()->id;
             $input['master_id'] = $input['master']['id'];
             $filterDate = $request->only(['filterDate'])['filterDate'];
             $input['initial_date'] = $filterDate[0];

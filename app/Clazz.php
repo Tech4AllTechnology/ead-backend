@@ -65,7 +65,7 @@ class Clazz extends Model
     }
 
     public function course() {
-        return $this->belongsTo('App\Course');
+        return $this->belongsTo('App\Course')->with('programItems');
     }
 
     public function master() {

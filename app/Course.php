@@ -22,7 +22,7 @@ class Course extends Model
     }
 
     public function getCourseList() {
-        return Course::whereNull('deleted_at')->with('programItems:id,name')->get();
+        return Course::whereNull('deleted_at')->with('programItems:id,name,automatic_courses')->get();
     }
 
     public function checkCourseExists($name) {

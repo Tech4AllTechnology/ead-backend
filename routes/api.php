@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 Route::post('/user/login', 'UserController@login');
 
 Route::group(['middleware' => 'auth:api'], function() {
+    Route::put('/user/logout', 'UserController@logout');
     Route::get('/user/info', 'UserController@details');
     Route::get('/user', 'UserController@index');
     Route::post('/user', 'UserController@store');
@@ -28,6 +29,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/country', 'CountryController@index');
 
     Route::get('/program', 'ProgramController@index');
+    Route::get('/program/constant', 'ProgramController@listConstant');
     Route::get('/program/enable', 'ProgramController@index');
     Route::post('/program', 'ProgramController@store');
     Route::put('/program/{program}', 'ProgramController@update');
