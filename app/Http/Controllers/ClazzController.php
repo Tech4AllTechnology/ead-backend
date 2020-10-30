@@ -52,7 +52,9 @@ class ClazzController extends Controller
         try {
             $input = $request->except('id');
             $input['name'] = $input['course']['name'] . (date_create())->format('Ym') . rand(0, 500);
-            $input['course_id'] = !empty($input['course']['id']) ? $input['course']['id'] : Program::find($input['program']['id'])->course()->first()->id;
+            $input['course_id'] = $input['course']['id'];
+            $input['program_id'] = $input['program']['id'];
+            $input['university_campus_id'] = $input['university_campus']['id'];
             $input['master_id'] = $input['master']['id'];
             $filterDate = $request->only(['filterDate'])['filterDate'];
             $input['initial_date'] = $filterDate[0];
@@ -111,6 +113,8 @@ class ClazzController extends Controller
             $clazzData['master_id'] = $clazzData['master']['id'];
             $clazzData['initial_date'] = $filterDate[0];
             $clazzData['end_date'] = $filterDate[1];
+            $input['program_id'] = $clazzData['program']['id'];
+            $input['university_campus_id'] = $clazzData['university_campus']['id'];
 
             $clazz->times()->forceDelete();
 

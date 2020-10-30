@@ -44,4 +44,8 @@ class Program extends Model
     public function getProgramAutomaticList() {
         return Program::whereNull('deleted_at')->where('automatic_courses', '=', 1)->with('responsible:id,name')->get();
     }
+
+    public function students() {
+        return $this->belongsToMany('App\User', 'user_program', 'program_id', 'user_id');
+    }
 }

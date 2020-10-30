@@ -13,7 +13,7 @@ class Clazz extends Model
     public $incrementing = false;
 
     public $fillable = [
-        'name', 'status', 'shift', 'semester', 'course_id', 'master_id', 'initial_date', 'end_date'
+        'name', 'status', 'shift', 'semester', 'course_id', 'master_id', 'initial_date', 'end_date', 'program_id', 'university_campus_id'
     ];
 
     protected $hidden = [
@@ -56,6 +56,8 @@ class Clazz extends Model
         return Clazz::whereNull('deleted_at')
             ->with('times')
             ->with('course:id,name')
+            ->with('program:id,name')
+            ->with('universityCampus:id,name')
             ->with('master:id,name')
             ->get();
     }
@@ -66,6 +68,14 @@ class Clazz extends Model
 
     public function course() {
         return $this->belongsTo('App\Course')->with('programItems');
+    }
+
+    public function universityCampus() {
+        return $this->belongsTo('App\UniversityCampus', 'university_campus_id', 'id');
+    }
+
+    public function program() {
+        return $this->belongsTo('App\Program');
     }
 
     public function master() {

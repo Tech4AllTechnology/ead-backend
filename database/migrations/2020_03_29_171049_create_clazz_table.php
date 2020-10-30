@@ -36,10 +36,12 @@ class CreateClazzTable extends Migration
                 ]
             );
 
-            $table->string('course_id');
+            $table->string('course_id')->nullable();
             $table->foreign('course_id')->references('id')->on('courses');
-            $table->string('master_id');
+            $table->string('master_id')->nullable();
             $table->foreign('master_id')->references('id')->on('users');
+            $table->string('program_id')->nullable();
+            $table->foreign('program_id')->references('id')->on('programs');
             $table->softDeletes();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP'));

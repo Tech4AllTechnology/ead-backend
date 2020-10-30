@@ -129,13 +129,21 @@ class UserController extends Controller
                 $input[$item] = Crypt::encryptString($input[$item]);
             }
             $input['application'] = (date_create())->format('YmdHisv');
-
+            $input['university_campus_id'] = $input['university_campus']['id'];
             $user = User::create($input);
             $user->attachRole($request->only(['type']));
             if ($request->has('telephones')) {
                 $telephones = $request->only(['telephones'])['telephones'];
                 foreach ($telephones as $telephone) {
-                    Telephone::create(['user_id' => $user->id, 'telephone_number' => $telephone['telephone_number']]);
+                    if (!is_null($telephone['telephone_number'])) {
+                        Telephone::create(['user_id' => $user->id, 'telephone_number' => $telephone['telephone_number']]);
+                    }
+                }
+            }
+            $programs = $request->only(['programs'])['programs'];
+            foreach ($programs as $program) {
+                if (!is_null($program['id'])) {
+                    $user->programs()->attach($program['id'], ['start_date' => '2020-01-01']);
                 }
             }
 
@@ -184,13 +192,25 @@ class UserController extends Controller
             if ($this->validateItens($request)) {
                 return response()->json(['code' => 401, 'message' => 'Os dados estão incorretos.'], $this->successStatus);
             }
-
+            $programItems = [];
             $userData = $request->all();
             foreach (User::$encrypted as $item) {
                 $userData[$item] = Crypt::encryptString($userData[$item]);
             }
+            $userData['university_campus_id'] = $userData['university_campus']['id'];
             $user->update($userData);
             $user->syncRoles($userData['type']);
+
+            $programs = $request->only(['programs'])['programs'];
+
+            foreach ($programs as $program) {
+                if (!is_null($program['id'])) {
+                    $programItems[$program['id']] = $program['id'];
+                    $programItems[$program['id']] = [ 'start_date' => '2020-01-01'];
+                }
+            }
+            $user->programs()->sync($programItems);
+
             $user->telephones()->forceDelete();
             if ($request->has('telephones')) {
                 $telephones = $request->only(['telephones'])['telephones'];
@@ -236,7 +256,7 @@ class UserController extends Controller
             }
             $users = (new User)->getUsersList();
             foreach ($users as $index => $user) {
-                if (!$user->hasRole("professor")) {
+                if (!$user->hasRole(["campuscoordinator", "administrativecoordinator"])) {
                     unset($users[$index]);
                     continue;
                 }
@@ -255,5 +275,22 @@ class UserController extends Controller
             'email' => 'required|email'
         ]);
         return $validator->fails();
+    }
+
+    /**
+     * Display a listing of the resource.
+     * @param  \App\User $user
+     * @return \Illuminate\Http\Response
+     */
+    public function listPrograms(User $user)
+    {
+        try {
+            if (!Auth::check()) {
+                Throw new \Exception('Você não tem permissão para acessar essa página.');
+            }
+            return response()->json(['code' => 200, 'data' => $user->programs()->get()], $this->successStatus);
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
     }
 }

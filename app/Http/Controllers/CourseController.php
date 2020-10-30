@@ -105,7 +105,7 @@ class CourseController extends Controller
     public function update(Request $request, Course $course)
     {
         try {
-            $programItens = [];
+            $programItems = [];
             if (!Auth::check()) {
                 response()->json(['code' => 403, 'message' => 'Você não tem acesso a essa função'], $this->successStatus);
             }
@@ -118,10 +118,10 @@ class CourseController extends Controller
             $programs = $request->only(['program_items'])['program_items'];
 
             foreach ($programs as $program) {
-                array_push($programItens, $program['id']);
+                array_push($programItems, $program['id']);
             }
 
-            $course->programItems()->sync($programItens);
+            $course->programItems()->sync($programItems);
 
             $course = $course->update($courseData);
             return response()->json(['data' => ['key' => $course->id, 'code' => $course->code], 'code' => 200], $this->successStatus);
@@ -157,5 +157,22 @@ class CourseController extends Controller
             'status' => 'required'
         ]);
         return $validator->fails();
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function listPrograms(Course $course)
+    {
+        try {
+            if (!Auth::check()) {
+                Throw new \Exception('Você não tem permissão para acessar essa página.');
+            }
+            return response()->json(['code' => 200, 'data' => $course->programItems()->get()], $this->successStatus);
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
     }
 }

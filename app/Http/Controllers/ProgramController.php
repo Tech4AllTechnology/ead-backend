@@ -182,4 +182,21 @@ class ProgramController extends Controller
         ]);
         return $validator->fails();
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function listCourses(Program $program)
+    {
+        try {
+            if (!Auth::check()) {
+                Throw new \Exception('Você não tem permissão para acessar essa página.');
+            }
+            return response()->json(['code' => 200, 'data' => $program->course()->get()], $this->successStatus);
+        } catch (\Exception $exception) {
+            return response()->json(['code' => 500, 'message' => 'Ocorreu um erro na requisição'], $this->successStatus);
+        }
+    }
 }
